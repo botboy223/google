@@ -6,7 +6,7 @@ function loadGoogleSheetsApi() {
 function initGoogleClient() {
     gapi.client.init({
         apiKey: 'YOUR_API_KEY', // Replace with your actual API key
-        clientId: 'YOUR_CLIENT_ID', // Replace with your actual Client ID
+        clientId: '436073560587-1mcuvl6det6sf4tktqbfhh01ffs17sp0.apps.googleusercontent.com', // Replace with your actual Client ID
         discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
         scope: 'https://www.googleapis.com/auth/spreadsheets'
     }).then(function () {
