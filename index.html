@@ -58,8 +58,14 @@ function initClient() {
 
         // Handle the initial sign-in state
         updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+    }).catch(error => {
+        console.error('Error during initialization', error);
+        document.getElementById('message').textContent = 'Error initializing the Google API client.';
     });
 }
+
+// Ensure client loads on window load
+window.onload = handleClientLoad;
 
 // Update UI based on the signed-in status
 function updateSigninStatus(isSignedIn) {
@@ -74,12 +80,18 @@ function updateSigninStatus(isSignedIn) {
 
 // Sign in user
 function handleAuthClick() {
-    gapi.auth2.getAuthInstance().signIn();
+    gapi.auth2.getAuthInstance().signIn().catch(error => {
+        console.error('Error during sign-in', error);
+        document.getElementById('message').textContent = 'Error signing in. Please try again.';
+    });
 }
 
 // Sign out user
 function handleSignoutClick() {
-    gapi.auth2.getAuthInstance().signOut();
+    gapi.auth2.getAuthInstance().signOut().catch(error => {
+        console.error('Error during sign-out', error);
+        document.getElementById('message').textContent = 'Error signing out. Please try again.';
+    });
 }
 
 // Generate a random product key (format XXXX-XXXX-XXXX-XXXX)
@@ -98,8 +110,8 @@ function generateProductKey() {
 // Store generated product keys in Google Sheets
 function generateAndStoreKeys() {
     let numKeys = document.getElementById('num_keys').value;
-    if (!numKeys) {
-        document.getElementById('message').textContent = 'Please enter a number of keys to generate.';
+    if (!numKeys || numKeys <= 0) {
+        document.getElementById('message').textContent = 'Please enter a valid number of keys to generate.';
         return;
     }
 
@@ -121,6 +133,9 @@ function generateAndStoreKeys() {
 
     gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody).then((response) => {
         document.getElementById('message').textContent = `${numKeys} Product Keys generated and stored successfully.`;
+    }).catch(error => {
+        console.error('Error storing product keys', error);
+        document.getElementById('message').textContent = 'Error generating or storing product keys. Please try again.';
     });
 }
 
@@ -165,6 +180,9 @@ function validateProductKey() {
 
                 gapi.client.sheets.spreadsheets.values.update(updateParams).then(() => {
                     document.getElementById('message').textContent = `Product key valid. Username: ${username}, Password: ${password}`;
+                }).catch(error => {
+                    console.error('Error updating product key', error);
+                    document.getElementById('message').textContent = 'Error updating product key. Please try again.';
                 });
                 break;
             } else if (row[0] === productKey && row[1] === 'used') {
@@ -177,6 +195,9 @@ function validateProductKey() {
         if (!found) {
             document.getElementById('message').textContent = 'Invalid product key.';
         }
+    }).catch(error => {
+        console.error('Error validating product key', error);
+        document.getElementById('message').textContent = 'Error validating product key. Please try again.';
     });
 }
 
